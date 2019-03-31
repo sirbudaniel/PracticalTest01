@@ -30,8 +30,7 @@ public class PracticalTest01SecondaryActivity extends AppCompatActivity {
         ok.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intentToParent = new Intent();
-                setResult(0, intentToParent);
+                setResult(0, null);
                 finish();
             }
         });
@@ -39,8 +38,7 @@ public class PracticalTest01SecondaryActivity extends AppCompatActivity {
         cancel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intentToParent = new Intent();
-                setResult(-1, intentToParent);
+                setResult(-1, null);
                 finish();
             }
         });
