@@ -33,17 +33,50 @@ public class PracticalTest01MainActivity extends AppCompatActivity {
 //    **************************************
 
 
+//  LISTENERS
+    private ButtonClickListener buttonClickListener = new ButtonClickListener();
+    private class ButtonClickListener implements View.OnClickListener {
+        @Override
+        public void onClick(View view) {
+            if (view.getId() == R.id.button_1) {
+                text_1.setText(String.valueOf(Integer.parseInt(text_1.getText().toString()) + 1));
+            } else if (view.getId() == R.id.button_2) {
+                text_2.setText(String.valueOf(Integer.parseInt(text_2.getText().toString()) + 1));
+
+            } else if (view.getId() == R.id.second_act) {
+
+//  SECOND ACTIVITY
+                Intent intent = new Intent(getApplicationContext(), PracticalTest01SecondaryActivity.class);
+                intent.setAction("ro.pub.cs.systems.eim.practicaltest01.intent.action.second");
+                intent.putExtra("extra", String.valueOf(Integer.parseInt(text_1.getText().toString()) + Integer.parseInt(text_2.getText().toString())));
+                startActivityForResult(intent, 22);
+            }
+
+//  SERVICE
+            if (Integer.parseInt(text_1.getText().toString())+ Integer.parseInt(text_2.getText().toString()) > Constants.NUMBER_OF_CLICKS_THRESHOLD
+                    && serviceStatus == Constants.SERVICE_STOPPED) {
+                Intent intent = new Intent(getApplicationContext(), ComputeService.class);
+                intent.putExtra("firstNumber", Integer.parseInt(text_1.getText().toString()));
+                intent.putExtra("secondNumber", Integer.parseInt(text_2.getText().toString()));
+                getApplicationContext().startService(intent);
+                serviceStatus = Constants.SERVICE_STARTED;
+            }
+
+        }
+    }
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_practical_test01_main);
 
-//      BROADCAST RECEIVER ACTION
+//  BROADCAST RECEIVER ACTION
         for (int index = 0; index < Constants.actionTypes.length; index++) {
             intentFilter.addAction(Constants.actionTypes[index]);
         }
 
-//      GUI
+//  GUI
         button_1 = (Button) findViewById(R.id.button_1);
         button_2 = (Button) findViewById(R.id.button_2);
         second_act = (Button) findViewById(R.id.second_act);
@@ -51,7 +84,7 @@ public class PracticalTest01MainActivity extends AppCompatActivity {
         text_1 = (EditText) findViewById(R.id.textView_1);
         text_2 = (EditText) findViewById(R.id.textView_2);
 
-//      SAVE STATE
+//  SAVE STATE
         if (savedInstanceState != null) {
             if (savedInstanceState.containsKey("first")) {
                 text_1.setText(savedInstanceState.getString("first"));
@@ -61,51 +94,10 @@ public class PracticalTest01MainActivity extends AppCompatActivity {
             }
         }
 
-//      LISTENERS
-        button_1.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                text_1.setText(String.valueOf(Integer.parseInt(text_1.getText().toString()) + 1));
-
-//      SERVICE
-                if (Integer.parseInt(text_1.getText().toString())+ Integer.parseInt(text_2.getText().toString()) > Constants.NUMBER_OF_CLICKS_THRESHOLD
-                        && serviceStatus == Constants.SERVICE_STOPPED) {
-                    Intent intent = new Intent(getApplicationContext(), ComputeService.class);
-                    intent.putExtra("firstNumber", Integer.parseInt(text_1.getText().toString()));
-                    intent.putExtra("secondNumber", Integer.parseInt(text_2.getText().toString()));
-                    getApplicationContext().startService(intent);
-                    serviceStatus = Constants.SERVICE_STARTED;
-                }
-            }
-        });
-
-        button_2.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                text_2.setText(String.valueOf(Integer.parseInt(text_2.getText().toString()) + 1));
-
-                if (Integer.parseInt(text_1.getText().toString())+ Integer.parseInt(text_2.getText().toString()) > Constants.NUMBER_OF_CLICKS_THRESHOLD
-                        && serviceStatus == Constants.SERVICE_STOPPED) {
-                    Intent intent = new Intent(getApplicationContext(), ComputeService.class);
-                    intent.putExtra("firstNumber", Integer.parseInt(text_1.getText().toString()));
-                    intent.putExtra("secondNumber", Integer.parseInt(text_2.getText().toString()));
-                    getApplicationContext().startService(intent);
-                    serviceStatus = Constants.SERVICE_STARTED;
-                }
-            }
-        });
-
-//  SECOND ACTIVITY
-        second_act.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(getApplicationContext(), PracticalTest01SecondaryActivity.class);
-                intent.setAction("ro.pub.cs.systems.eim.practicaltest01.intent.action.second");
-                intent.putExtra("extra", String.valueOf(Integer.parseInt(text_1.getText().toString()) + Integer.parseInt(text_2.getText().toString())));
-                startActivityForResult(intent, 22);
-            }
-        });
-
+//   LISTENERS
+        button_1.setOnClickListener(buttonClickListener);
+        button_2.setOnClickListener(buttonClickListener);
+        second_act.setOnClickListener(buttonClickListener);
 
     }
 
